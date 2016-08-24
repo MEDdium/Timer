@@ -5,7 +5,7 @@
     Dim pids() As Process
     Dim timertime() As Integer
     Dim bots As New ArrayList
-    'Dim pids As New ArrayList
+    ''Dim pids As New ArrayLis
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim files = My.Computer.FileSystem.GetFiles(My.Application.Info.DirectoryPath, FileIO.SearchOption.SearchAllSubDirectories, "*.exe")
@@ -186,9 +186,5 @@
         'MsgBox(pids(i).StandardOutput.ReadToEnd)
 
         'MsgBox(pids(i).StandardOutput.ReadToEnd())
-    End Sub
-
-    Private Sub Button1_Click_1(sender As Object, e As EventArgs) Handles Button1.Click
-
     End Sub
 End Class
