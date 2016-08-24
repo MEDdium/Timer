@@ -1,5 +1,4 @@
 ﻿Public Class Form1
-    Dim links() As LinkLabel
     Dim ontimers() As Windows.Forms.Timer
     Dim offtimers() As Windows.Forms.Timer
     Dim pids() As Process
@@ -13,42 +12,22 @@
                 bots.Add(file)
             End If
         Next
-        InitLinkArray(bots.Count)
+        Init(bots.Count)
     End Sub
-    Private Sub InitLinkArray(ByVal Count As Integer)
+    Private Sub Init(ByVal Count As Integer)
         Dim i As Integer
         Count -= 1
-        ReDim Preserve links(Count)
         ReDim Preserve ontimers(Count)
         ReDim Preserve offtimers(Count)
         ReDim Preserve pids(Count)
         ReDim Preserve timertime(Count)
         For i = 0 To Count
-            links(i) = New LinkLabel()
-            With links(i)
-                .Location = New Point(10, i * 30 + 10)
-                .Text = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
-            End With
-            AddHandler links(i).Click, AddressOf LinkClick
             ontimers(i) = New Windows.Forms.Timer With {.Interval = 1000}
             AddHandler ontimers(i).Tick, AddressOf OnTimerTick
             offtimers(i) = New Windows.Forms.Timer With {.Interval = 1000}
             AddHandler offtimers(i).Tick, AddressOf OffTimerTick
+            ListBox1.Items.Add(My.Computer.FileSystem.GetFileInfo(bots(i)).Name)
         Next i
-        Controls.AddRange(links)
-    End Sub
-    Private Sub LinkClick(ByVal sender As Object, ByVal e As EventArgs)
-        Dim i As Integer
-        i = Array.IndexOf(links, sender)
-        If ontimers(i).Enabled = True Then timertime(i) = 0 : Exit Sub
-        If offtimers(i).Enabled = True Then
-            offtimers(i).Enabled = False
-            links(i).Text = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
-            Exit Sub
-        End If
-        botstart(i)
-        rndtime(i, 15)
-        ontimers(i).Enabled = True
     End Sub
 
     Private Sub OnTimerTick(ByVal sender As Object, ByVal e As EventArgs)
@@ -56,7 +35,7 @@
         i = Array.IndexOf(ontimers, sender)
         If pids(i).HasExited Then
             ontimers(i).Enabled = False
-            links(i).Text = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
+            ListBox1.Items.Item(i) = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
             Exit Sub
         End If
         timertime(i) -= 1
@@ -66,7 +45,7 @@
             rndtime(i, 20)
             offtimers(i).Enabled = True
         Else
-            links(i).Text = "Осталось " & Int(timertime(i) / 60) & ":" & timertime(i) - (Int(timertime(i) / 60) * 60)
+            ListBox1.Items.Item(i) = "Осталось " & Int(timertime(i) / 60) & ":" & timertime(i) - (Int(timertime(i) / 60) * 60)
         End If
     End Sub
 
@@ -80,7 +59,7 @@
             rndtime(i, 15)
             ontimers(i).Enabled = True
         Else
-            links(i).Text = "Пауза " & Int(timertime(i) / 60) & ":" & timertime(i) - (Int(timertime(i) / 60) * 60)
+            ListBox1.Items.Item(i) = "Пауза " & Int(timertime(i) / 60) & ":" & timertime(i) - (Int(timertime(i) / 60) * 60)
         End If
     End Sub
 
@@ -110,5 +89,18 @@
         End With
         pids(i) = New Process With {.StartInfo = prc}
         pids(i).Start()
+    End Sub
+
+    Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.DoubleClick
+        Dim i = ListBox1.SelectedIndex
+        If ontimers(i).Enabled = True Then timertime(i) = 0 : Exit Sub
+        If offtimers(i).Enabled = True Then
+            offtimers(i).Enabled = False
+            ListBox1.Items.Item(i) = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
+            Exit Sub
+        End If
+        botstart(i)
+        rndtime(i, 15)
+        ontimers(i).Enabled = True
     End Sub
 End Class
