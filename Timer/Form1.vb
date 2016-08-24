@@ -84,13 +84,17 @@
         End If
         Button1.Text = "Start ALL"
         For i = 0 To bots.Count - 1
-            If Not pids(i).HasExited Then pids(i).Kill()
-            If ontimers(i).Enabled = True Then timertime(i) = 0
-            If offtimers(i).Enabled = True Then offtimers(i).Enabled = False
+            If pids(i) IsNot Nothing AndAlso Not pids(i).HasExited Then
+                pids(i).Kill()
+            End If
+            ontimers(i).Enabled = False
+            offtimers(i).Enabled = False
             ListBox1.Items.Item(i) = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
         Next
+
     End Sub
     Private Sub botstart(i As String)
+        Button1.Text = "Stop ALL"
         Dim dir = My.Computer.FileSystem.GetFileInfo(bots(i)).DirectoryName
         Dim file = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
         Dim prc As New ProcessStartInfo
@@ -105,6 +109,22 @@
 
     Private Sub ListBox1_DoubleClick(sender As Object, e As EventArgs) Handles ListBox1.DoubleClick
         Dim i = ListBox1.SelectedIndex
+        If ontimers(i).Enabled = True Then timertime(i) = 0 : Exit Sub
+        If offtimers(i).Enabled = True Then
+            offtimers(i).Enabled = False
+            ListBox1.Items.Item(i) = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
+            Exit Sub
+        End If
+        botstart(i)
+        rndtime(i, 15)
+        ontimers(i).Enabled = True
+    End Sub
+
+    Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.SelectedIndexChanged
+        Dim i = ListBox1.SelectedIndex
+        If i < 0 Then Exit Sub
+        'MsgBox(i)
+        ListBox1.ClearSelected()
         If ontimers(i).Enabled = True Then timertime(i) = 0 : Exit Sub
         If offtimers(i).Enabled = True Then
             offtimers(i).Enabled = False
