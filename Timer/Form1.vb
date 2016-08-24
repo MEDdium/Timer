@@ -37,9 +37,9 @@
         Next i
         Controls.AddRange(links)
     End Sub
-    Private Sub LinkClick(ByVal sender As System.Object, ByVal e As System.EventArgs)
+    Private Sub LinkClick(ByVal sender As Object, ByVal e As EventArgs)
         Dim i As Integer
-        i = Array.IndexOf(links, sender) ' + 1
+        i = Array.IndexOf(links, sender)
         If ontimers(i).Enabled = True Then timertime(i) = 0 : Exit Sub
         If offtimers(i).Enabled = True Then
             offtimers(i).Enabled = False
@@ -51,9 +51,9 @@
         ontimers(i).Enabled = True
     End Sub
 
-    Private Sub OnTimerTick(ByVal sender As System.Object, ByVal e As System.EventArgs)
+    Private Sub OnTimerTick(ByVal sender As Object, ByVal e As EventArgs)
         Dim i As Integer
-        i = Array.IndexOf(ontimers, sender) ' + 1
+        i = Array.IndexOf(ontimers, sender)
         If pids(i).HasExited Then
             ontimers(i).Enabled = False
             links(i).Text = My.Computer.FileSystem.GetFileInfo(bots(i)).Name
@@ -62,17 +62,17 @@
         timertime(i) -= 1
         If timertime(i) <= 0 Then
             ontimers(i).Enabled = False
-            Shell("taskkill /PID " & pids(i).Id & " /T /F")
-            rndtime(i, 20) '--------------
+            pids(i).Kill()
+            rndtime(i, 20)
             offtimers(i).Enabled = True
         Else
             links(i).Text = "Осталось " & Int(timertime(i) / 60) & ":" & timertime(i) - (Int(timertime(i) / 60) * 60)
         End If
     End Sub
 
-    Private Sub OffTimerTick(ByVal sender As Object, ByVal e As System.EventArgs)
+    Private Sub OffTimerTick(ByVal sender As Object, ByVal e As EventArgs)
         Dim i As Integer
-        i = Array.IndexOf(offtimers, sender) ' + 1
+        i = Array.IndexOf(offtimers, sender)
         timertime(i) -= 1
         If timertime(i) <= 0 Then
             offtimers(i).Enabled = False
